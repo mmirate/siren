@@ -24,8 +24,6 @@ use File::Basename;
 
 die 'must be run as root!' unless $> == 0;
 
-my $message = io('-')->slurp;
-
 my @users = map { basename $_ } grep { eval { -e "$_/.fdm.conf" and -e "$_/.msmtprc" } } grep {!m#^/home/lost\+found$#} @{io('/home')};
 
 my $command;
@@ -35,5 +33,7 @@ if (grep(/\@/,@ARGV)) {
 } else {
 	run ['shell-quote','fdm','-va','stdin','fetch'],'>',\$command;
 }
+
+my $message = io('-')->slurp;
 
 run ['su','-c',$command,$users[0]],\$message;
